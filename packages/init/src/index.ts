@@ -16,7 +16,8 @@ app.get('/test', (req, res) => {
   res.send(`${randomKey}`)
 })
 
-app.post('/', (req, res) => {
+app.post('/init', (req, res) => {
+  debugger
   res.sendStatus(200)
 })
 

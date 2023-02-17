@@ -1,5 +1,4 @@
 import { getLocalIp, getPublicIp, randomKey } from './ip'
-import e from 'express'
 
 const emojis = {
   question: '❓',
@@ -25,10 +24,15 @@ export const getPage = async () => {
         await testPort(443)
     }
     async function testDomain(){
-        debugger
+        const result = await fetch("http://"+document.getElementById("domain-input").value+"/test")
+        .then(r=>r.text()).catch(()=>"")
+        document.getElementById("testDomain").innerHTML = result==="${randomKey}" ? '${emojis.check}' : '${emojis.cross}'
     }
     function saveDomain(e){
-        debugger
+        localStorage.setItem("domain",e.target.value)
+    }
+    async function initServer(){
+        await fetch("/init", {body: JSON.stringify({domain: document.getElementById("domain-input").value}), method: "POST"})
     }
 </script>
 </head>
@@ -48,8 +52,14 @@ export const getPage = async () => {
 <div>A free domain can be obtained at <a href="https://www.duckdns.org/">DuckDns</a></div>
 <div>Your domain name (without http/s):</div>
 <input id="domain-input" oninput="saveDomain(event)">
+<div>Domain correctly set up: <span id="testDomain">${emojis.question}</span></div>
 <button onclick="testDomain()">Test domain</button>
 </div>
+<h2>Step 3: Initialize server</h2>
+<button onclick="initServer()">Initialize server</button>
+<script>
+document.getElementById("domain-input").value=localStorage.getItem("domain")
+</script>
 </body>
 
 </html>`
