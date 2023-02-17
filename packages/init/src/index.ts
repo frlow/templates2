@@ -1,12 +1,19 @@
 import express from 'express'
 import { getPage } from './html'
+import { randomKey } from './ip'
 
 const app = express()
 app.use(express.json())
 
 app.get('/', async (req, res) => {
   res.setHeader('content-type', 'text/html')
-  res.send(getPage())
+  res.send(await getPage())
+})
+
+app.get('/test', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('content-type', 'text/plain')
+  res.send(`${randomKey}`)
 })
 
 app.post('/', (req, res) => {

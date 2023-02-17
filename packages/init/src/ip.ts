@@ -12,3 +12,18 @@ export const getLocalIp = () => {
     .flatMap((n) => n)
     .find((ip) => ip?.name === 'en0')?.ip
 }
+
+export const getPublicIp = async () => {
+  const result = await fetch('https://api.ipify.org?format=json').then((r) =>
+    r.json()
+  )
+  return result.ip
+}
+
+export const randomKey = Math.random()
+export const testPort = async (port: number) => {
+  const result = await fetch(`http://${await getPublicIp()}:${port}/test`).then(
+    (r) => r.text()
+  )
+  debugger
+}
