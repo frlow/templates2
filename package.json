@@ -8,5 +8,8 @@
   "license": "ISC",
   "devDependencies": {
     "prettier": "^2.8.4"
+  },
+  "scripts": {
+    "web": "pnpm --filter=web run"
   }
 }
