@@ -1,4 +1,13 @@
 import { Title } from 'solid-start'
+import { createServerData$ } from 'solid-start/server'
+import { getInstalledApps, getStoreApps } from '~/services/appsService'
+
+export function routeData() {
+  return createServerData$(() => ({
+    apps: getStoreApps(),
+    installed: getInstalledApps(),
+  }))
+}
 
 export default function () {
   return (

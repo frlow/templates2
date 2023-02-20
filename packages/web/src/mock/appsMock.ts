@@ -1,4 +1,4 @@
-import { InstalledApp } from '~/services/appsService'
+import { InstalledApp, StoreApp } from '~/services/appsService'
 
 export const installedAppsMock: InstalledApp[] = [
   {
@@ -28,3 +28,14 @@ sjdofihjskdfl`,
   ]
   return responses[Math.floor(Math.random() * responses.length)]
 }
+
+export const appUninstallMock = async (): Promise<boolean> => {
+  await new Promise((r) => setTimeout(() => r(''), 2000))
+  return true
+}
+
+export const storeAppsMock: StoreApp[] = [
+  {
+    name: 'radarr',
+  },
+]
