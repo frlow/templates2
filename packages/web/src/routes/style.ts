@@ -1,0 +1,22 @@
+import { css } from 'solid-styled-components'
+
+export const drawerStyle = css`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+`
+
+export const buttonStyle = css`
+  padding: 1rem;
+  border-radius: 4px;
+  border: 1px solid white;
+  background-color: #6e6e6e;
+  color: white;
+  min-width: 300px;
+
+  &:disabled {
+    color: #d38a8a;
+    background-color: #4f4f4f;
+  }
+`

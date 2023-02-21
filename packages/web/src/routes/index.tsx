@@ -4,7 +4,7 @@ import { getInstalledApps, InstalledApp } from '~/services/appsService'
 import Tile from '~/components/Tile'
 import { useNavigate } from '@solidjs/router'
 import { getSettings } from '~/services/settingsService'
-import { css } from 'solid-styled-components'
+import { drawerStyle } from '~/routes/style'
 
 export function routeData() {
   return createServerData$(() => ({
@@ -12,13 +12,6 @@ export function routeData() {
     settings: getSettings(),
   }))
 }
-
-const drawerStyle = css`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-`
 
 export default function Home() {
   const data = useRouteData<typeof routeData>()
@@ -30,16 +23,16 @@ export default function Home() {
       <div class={drawerStyle}>
         {data()
           ?.apps?.filter((app) => app.type === 'app')
-          .sort((a, b) => (a.name.localeCompare(b.name) ? -1 : 1))
+          .sort((a, b) => (a.id.localeCompare(b.id) ? -1 : 1))
           .map((app) => (
             <Tile
-              title={app.name}
+              title={app.id}
               onClick={() =>
-                (window.location.href = `https://${app.name.toLowerCase()}.${
+                (window.location.href = `https://${app.id}.${
                   data()?.settings.domain
                 }`)
               }
-              onInfoClick={() => navigate(`/apps/${app.name.toLowerCase()}`)}
+              onInfoClick={() => navigate(`/apps/${app.id}`)}
             />
           ))}
       </div>
@@ -47,13 +40,9 @@ export default function Home() {
       <div class={drawerStyle}>
         {data()
           ?.apps?.filter((app) => app.type === 'service')
-          .sort((a, b) => (a.name.localeCompare(b.name) ? -1 : 1))
+          .sort((a, b) => (a.id.localeCompare(b.id) ? -1 : 1))
           .map((app) => (
-            <Tile
-              title={app.name}
-              onClick={() => navigate(`/apps/${app.name.toLowerCase()}`)}
-              onInfoClick={() => navigate(`/apps/${app.name.toLowerCase()}`)}
-            />
+            <Tile title={app.id} onClick={() => navigate(`/apps/${app.id}`)} />
           ))}
       </div>
     </main>

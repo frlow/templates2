@@ -1,16 +1,25 @@
-import { InstalledApp, StoreApp } from '~/services/appsService'
+import { App } from '~/services/appsService'
 
-export const installedAppsMock: InstalledApp[] = [
-  {
-    name: 'sonarr',
+const apps: Record<string, App> = {
+  radarr: {
+    id: 'radarr',
     type: 'app',
+    description: 'Automate Movie downloads',
   },
-  {
-    name: 'airsonic',
+  sonarr: {
+    id: 'sonarr',
     type: 'app',
+    description: 'Automate TV downloads',
   },
-  { name: 'plex', type: 'service' },
-]
+  airsonic: {
+    id: 'airsonic',
+    type: 'app',
+    description: 'A music streaming server',
+  },
+  plex: { id: 'plex', type: 'service', description: 'Media streaming server' },
+}
+
+export const installedAppsMock: App[] = [apps.airsonic, apps.plex, apps.sonarr]
 
 export const appLogMock = () => {
   const responses = [
@@ -29,13 +38,23 @@ sjdofihjskdfl`,
   return responses[Math.floor(Math.random() * responses.length)]
 }
 
-export const appUninstallMock = async (): Promise<boolean> => {
+export const appUninstallMock = async (id: string): Promise<boolean> => {
   await new Promise((r) => setTimeout(() => r(''), 2000))
+  installedAppsMock.splice(
+    installedAppsMock.indexOf(
+      installedAppsMock.find((app) => app.id === id) || ({} as App)
+    ),
+    1
+  )
   return true
 }
 
-export const storeAppsMock: StoreApp[] = [
-  {
-    name: 'radarr',
-  },
-]
+export const appInstallMock = async (id: string): Promise<boolean> => {
+  await new Promise((r) => setTimeout(() => r(''), 10000))
+  installedAppsMock.push(apps[id])
+  return true
+}
+
+export const storeAppMock: App = apps.radarr
+
+export const storeAppsMock: App[] = Object.values(apps)

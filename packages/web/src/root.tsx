@@ -37,6 +37,7 @@ export default function Root() {
               <A href="/store">Store</A>
               <A href="/manage">Manage</A>
               <A href="/settings">Settings</A>
+              <A href="/log">Log</A>
             </div>
             <Routes>
               <FileRoutes />

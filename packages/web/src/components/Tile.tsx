@@ -33,8 +33,10 @@ export default function (props: {
       <div class={titleStyle}>{props.title}</div>
       <img
         onclick={(e) => {
-          e.stopPropagation()
-          props.onInfoClick && props.onInfoClick()
+          if (props.onInfoClick) {
+            e.stopPropagation()
+            props.onInfoClick()
+          }
         }}
         class={logoStyle}
         src={`/${props.title.toLowerCase()}.png`}

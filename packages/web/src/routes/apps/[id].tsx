@@ -4,6 +4,9 @@ import { refetchRouteData, RouteDataArgs, useRouteData } from 'solid-start'
 import { createServerAction$, createServerData$ } from 'solid-start/server'
 import { getAppLog, uninstallApp } from '~/services/appsService'
 import { createSignal } from 'solid-js'
+import { AppTitle } from '~/components/AppTitle'
+import { buttonStyle } from '~/routes/style'
+import { getSettings } from '~/services/settingsService'
 
 const rootStyle = css`
   display: flex;
@@ -19,30 +22,13 @@ const logStyle = css`
   width: calc(100vw - 2rem);
 `
 
-const titleStyle = css`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-`
-
-const imageStyle = css`
-  width: 60px;
-  height: 60px;
-`
-
-const buttonStyle = css`
-  padding: 1rem;
-  border-radius: 4px;
-  border: 1px solid white;
-  background-color: #6e6e6e;
-  color: white;
-  min-width: 300px;
-`
-
 export function routeData({ params }: RouteDataArgs) {
-  return createServerData$((id) => ({ log: getAppLog(id) }), {
-    key: () => params.id,
-  })
+  return createServerData$(
+    (id) => ({ log: getAppLog(id), settings: getSettings() }),
+    {
+      key: () => params.id,
+    }
+  )
 }
 
 export default function () {
@@ -53,10 +39,12 @@ export default function () {
   const [, uninstall] = createServerAction$((id: string) => uninstallApp(id))
   return (
     <main class={rootStyle}>
-      <div class={titleStyle}>
-        <img class={imageStyle} src={`/${id}.png`} alt={id} />
-        <h1>{id}</h1>
-      </div>
+      <AppTitle
+        id={id}
+        onClick={() =>
+          (window.location.href = `https://${id}.${data()?.settings.domain}`)
+        }
+      />
       <button
         disabled={busy()}
         class={buttonStyle}
