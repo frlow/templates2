@@ -1,6 +1,6 @@
 import { Title, useRouteData } from 'solid-start'
 import { createServerData$ } from 'solid-start/server'
-import { getInstalledApps, getStore } from '~/services/appsService'
+import { getApps } from '~/services/appsService'
 import { drawerStyle } from '~/routes/style'
 import Tile from '~/components/Tile'
 import { useNavigate } from '@solidjs/router'
@@ -8,9 +8,8 @@ import { css } from 'solid-styled-components'
 import { createSignal } from 'solid-js'
 
 export function routeData() {
-  return createServerData$(() => ({
-    store: getStore(),
-    apps: getInstalledApps(),
+  return createServerData$(async () => ({
+    apps: await getApps(),
   }))
 }
 
@@ -42,10 +41,11 @@ export default function () {
       ></input>
       <div class={drawerStyle}>
         {data()
-          ?.store.filter((app) => app.id.includes(search()))
+          ?.apps?.filter((app) => app.state === 'notInstalled')
+          .filter((app) => app.id.includes(search()))
           .sort((a, b) => (a.id.localeCompare(b.id) ? -1 : 1))
           .map((app) => (
-            <Tile title={app.id} onClick={() => navigate(`/store/${app.id}`)} />
+            <Tile title={app.id} onClick={() => navigate(`/apps/${app.id}`)} />
           ))}
       </div>
     </main>

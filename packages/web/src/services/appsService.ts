@@ -2,25 +2,39 @@ import process from 'process'
 import {
   appInstallMock,
   appLogMock,
+  appsMock,
   appUninstallMock,
-  installedAppsMock,
-  storeAppMock,
-  storeAppsMock,
 } from '~/mock/appsMock'
 
 export type App = {
   id: string
   description: string
   type: 'app' | 'service'
+  state: 'installed' | 'notInstalled'
 }
 
 const notImplemented = 'Not implemented'
+let busy = false
+const runIfNotBusy = async (func: () => Promise<boolean>) => {
+  if (busy) {
+    debugger
+    return false
+  }
+  busy = true
+  const result = await func()
+  busy = false
+  return result
+}
 
-const loadInstalledApps = (): App[] => {
+function loadApps(): Promise<App[]> {
   throw notImplemented
 }
 
 function loadAppLog(id: string): string {
+  throw notImplemented
+}
+
+function loadLog(): string {
   throw notImplemented
 }
 
@@ -32,32 +46,27 @@ async function runInstallApp(id: string): Promise<boolean> {
   throw notImplemented
 }
 
-function loadStoreApps(): App[] {
-  throw notImplemented
-}
-
-function loadStoreApp(id: string): App {
-  throw notImplemented
-}
-
-export const getInstalledApps = (): App[] =>
-  process.env.NODE_ENV === 'production'
-    ? loadInstalledApps()
-    : installedAppsMock
+export const getApps = async () =>
+  process.env.NODE_ENV === 'production' ? await loadApps() : appsMock()
 
 export const getAppLog = (id: string): string =>
   process.env.NODE_ENV === 'production' ? loadAppLog(id) : appLogMock()
 
-export const uninstallApp = (id: string) =>
-  process.env.NODE_ENV === 'production'
-    ? runUninstallApp(id)
-    : appUninstallMock(id)
+export const uninstallApp = async (id: string) =>
+  runIfNotBusy(async () =>
+    process.env.NODE_ENV === 'production'
+      ? await runUninstallApp(id)
+      : await appUninstallMock(id)
+  )
 
-export const installApp = (id: string) =>
-  process.env.NODE_ENV === 'production' ? runInstallApp(id) : appInstallMock(id)
+export const installApp = async (id: string) =>
+  runIfNotBusy(async () =>
+    process.env.NODE_ENV === 'production'
+      ? await runInstallApp(id)
+      : await appInstallMock(id)
+  )
 
-export const getStore = (): App[] =>
-  process.env.NODE_ENV === 'production' ? loadStoreApps() : storeAppsMock
+export const getLog = async () =>
+  process.env.NODE_ENV === 'production' ? loadLog() : appLogMock()
 
-export const getStoreApp = (id: string): App =>
-  process.env.NODE_ENV === 'production' ? loadStoreApp(id) : storeAppMock
+export const getIsBusy = () => busy

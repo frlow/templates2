@@ -34,9 +34,7 @@ export default function Root() {
               `}
             >
               <A href="/">Apps</A>
-              <A href="/store">Store</A>
-              <A href="/manage">Manage</A>
-              <A href="/settings">Settings</A>
+              <A href="/install">Install</A>
               <A href="/log">Log</A>
             </div>
             <Routes>
