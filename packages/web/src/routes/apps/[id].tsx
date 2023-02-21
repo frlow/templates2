@@ -58,7 +58,6 @@ export default function () {
             ? await uninstall(id)
             : await install(id)
           await refetchRouteData()
-          console.log(data())
           setHandling(false)
         }}
       >
