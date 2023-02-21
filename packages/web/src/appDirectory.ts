@@ -15,9 +15,9 @@ export const appDirectory: AppDirectory = {
         ]
       }
     },
-    "ingresses": [
-      "radarr:7878"
-    ],
+    "ingresses": {
+      "radarr": 7878
+    },
     "description": "A music streaming server"
   }
 }

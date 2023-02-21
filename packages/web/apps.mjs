@@ -10,4 +10,4 @@ const apps = yamlApps.reduce((acc, file) => ({
 
 const code = `import {AppDirectory} from "~/docker/AppDirectory";
 export const appDirectory: AppDirectory = ${JSON.stringify(apps, null, 2)}`
-fs.writeFileSync('./src/apps.ts', code, 'utf8')
+fs.writeFileSync('./src/appDirectory.ts', code, 'utf8')

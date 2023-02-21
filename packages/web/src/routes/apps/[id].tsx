@@ -23,7 +23,7 @@ const rootStyle = css`
 export function routeData({ params }: RouteDataArgs) {
   return createServerData$(
     async (id) => ({
-      log: getAppLog(id),
+      log: await getAppLog(id),
       app: (await getApps()).find((app) => app.id === id),
       settings: getSettings(),
       busy: getIsBusy(),
@@ -39,7 +39,7 @@ export default function () {
   const [handling, setHandling] = createSignal(false)
   const data = useRouteData<typeof routeData>()
   const [, uninstall] = createServerAction$((id: string) => uninstallApp(id))
-  const [, install] = createServerAction$((id: string) => installApp(id))
+  const [, install] = createServerAction$((id: string) => installApp(id, {}))
   return (
     <main class={rootStyle}>
       <AppTitle

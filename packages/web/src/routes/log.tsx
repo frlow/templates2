@@ -5,7 +5,7 @@ import { refetchRouteData, useRouteData } from 'solid-start'
 
 export function routeData() {
   return createServerData$(async () => ({
-    log: await getLog(),
+    log: getLog(),
   }))
 }
 

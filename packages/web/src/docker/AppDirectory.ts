@@ -1,6 +1,10 @@
 import { PropertiesServices } from '~/docker/Compose'
 
-export type AppDirectory = Record<
-  string,
-  { description: string; ingresses?: string[]; services: PropertiesServices }
->
+export type AppConfig = {
+  description: string
+  ingresses?: Record<string, { domain?: string; port: number } | number>
+  services: PropertiesServices
+  variables?: string[]
+}
+
+export type AppDirectory = Record<string, AppConfig>

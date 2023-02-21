@@ -27,21 +27,17 @@ export const apps: App[] = [
   },
 ]
 
+const getRandomString = () => (Math.random() + 1).toString(36).substring(2)
+const log: string[] = []
+let counter = 0
+setInterval(() => {
+  counter = (counter + 1) % 10
+  const str = (getRandomString() + getRandomString()).substring(0, 10 + counter)
+  log.push(str)
+}, 200)
+
 export const appLogMock = () => {
-  const responses = [
-    `sdfoihsf
-sdfoijsdiof
-sjdofihjskdfl`,
-    `3+4904834
-å340+83
-+50834w
-5384+5834+p
-958u7o39mgu75o0394`,
-    `e8+v9muö24i0983u450vjm7349+87
-4e5vj7459v8m
-4s59y70sv34875908345`,
-  ]
-  return responses[Math.floor(Math.random() * responses.length)]
+  return log.slice(-100).join('\n')
 }
 
 export const appsMock = () => apps

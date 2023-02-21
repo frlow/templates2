@@ -681,48 +681,46 @@ export interface DefinitionsService {
   }
   user?: string
   userns_mode?: string
-  volumes?: (
-    | string
-    | {
-        type: string
-        source?: string
-        target?: string
-        read_only?: boolean
-        consistency?: string
-        bind?: {
-          propagation?: string
-          create_host_path?: boolean
-          selinux?: 'z' | 'Z'
-          /**
-           * This interface was referenced by `undefined`'s JSON-Schema definition
-           * via the `patternProperty` "^x-".
-           */
-          [k: string]: unknown
-        }
-        volume?: {
-          nocopy?: boolean
-          /**
-           * This interface was referenced by `undefined`'s JSON-Schema definition
-           * via the `patternProperty` "^x-".
-           */
-          [k: string]: unknown
-        }
-        tmpfs?: {
-          size?: number | string
-          mode?: number
-          /**
-           * This interface was referenced by `undefined`'s JSON-Schema definition
-           * via the `patternProperty` "^x-".
-           */
-          [k: string]: unknown
-        }
-        /**
-         * This interface was referenced by `undefined`'s JSON-Schema definition
-         * via the `patternProperty` "^x-".
-         */
-        [k: string]: unknown
-      }
-  )[]
+  volumes?: (string)[]
+  // | {
+  //     type: string
+  //     source?: string
+  //     target?: string
+  //     read_only?: boolean
+  //     consistency?: string
+  //     bind?: {
+  //       propagation?: string
+  //       create_host_path?: boolean
+  //       selinux?: 'z' | 'Z'
+  //       /**
+  //        * This interface was referenced by `undefined`'s JSON-Schema definition
+  //        * via the `patternProperty` "^x-".
+  //        */
+  //       [k: string]: unknown
+  //     }
+  //     volume?: {
+  //       nocopy?: boolean
+  //       /**
+  //        * This interface was referenced by `undefined`'s JSON-Schema definition
+  //        * via the `patternProperty` "^x-".
+  //        */
+  //       [k: string]: unknown
+  //     }
+  //     tmpfs?: {
+  //       size?: number | string
+  //       mode?: number
+  //       /**
+  //        * This interface was referenced by `undefined`'s JSON-Schema definition
+  //        * via the `patternProperty` "^x-".
+  //        */
+  //       [k: string]: unknown
+  //     }
+  //     /**
+  //      * This interface was referenced by `undefined`'s JSON-Schema definition
+  //      * via the `patternProperty` "^x-".
+  //      */
+  //     [k: string]: unknown
+  //   }
   volumes_from?: string[]
   working_dir?: string
   /**

@@ -5,8 +5,9 @@ import {
   appsMock,
   appUninstallMock,
 } from '~/mock/appsMock'
-import { appDirectory } from '~/apps'
+import { appDirectory } from '~/appDirectory'
 import * as fs from 'fs'
+import { dockerCommand, generateCompose } from '~/docker'
 
 export type App = {
   id: string
@@ -29,82 +30,91 @@ const runIfNotBusy = async (func: () => Promise<boolean>) => {
 }
 
 const installedAppsPath = './apps.json'
-const saveInstalledApps = (apps: string[]) =>
+export type InstalledApps = Record<string, Record<string, string>>
+
+const saveInstalledApps = (apps: InstalledApps) =>
   fs.writeFileSync(installedAppsPath, JSON.stringify(apps), 'utf8')
 
-const getInstalledApps = (): string[] => {
-  if (!fs.existsSync(installedAppsPath)) saveInstalledApps([])
+export const getInstalledApps = (): InstalledApps => {
+  if (!fs.existsSync(installedAppsPath)) saveInstalledApps({})
   return JSON.parse(fs.readFileSync(installedAppsPath, 'utf8'))
 }
 
-const addInstalledApp = (id: string) => {
-  const apps = getInstalledApps().reduce(
-    (acc, cur) => ({ ...acc, [cur]: cur }),
-    {} as any
-  )
-  apps[id] = id
-  saveInstalledApps(Object.keys(apps))
+const addInstalledApp = (id: string, variables: Record<string, string>) => {
+  const apps = getInstalledApps()
+  apps[id] = variables
+  saveInstalledApps(apps)
 }
 
 const removeInstalledApp = (id: string) => {
-  const apps = getInstalledApps().reduce(
-    (acc, cur) => ({ ...acc, [cur]: cur }),
-    {} as any
-  )
+  const apps = getInstalledApps()
   delete apps[id]
-  saveInstalledApps(Object.keys(apps))
+  saveInstalledApps(apps)
 }
 
 async function loadApps(): Promise<App[]> {
   const installed = getInstalledApps()
   return Object.entries(appDirectory).map(([id, value]) => ({
     id,
-    state: installed.includes(id) ? 'installed' : 'notInstalled',
+    state: installed[id] ? 'installed' : 'notInstalled',
     description: value.description,
     type: value.ingresses?.length || 0 > 0 ? 'app' : 'service',
   }))
 }
 
-function loadAppLog(id: string): string {
-  if (!getInstalledApps().includes(id)) return ''
-  return 'dummy'
-}
+let log = 'Log start\n'
 
 function loadLog(): string {
-  throw notImplemented('loadLog')
+  return log
+}
+
+async function loadAppLog(id: string): Promise<string> {
+  if (!getInstalledApps()[id]) return ''
+  // TODO generate compose
+  // TODO docker-compose log <id>
+  throw notImplemented('loadAppLog')
 }
 
 async function runUninstallApp(id: string): Promise<boolean> {
   removeInstalledApp(id)
+  // TODO generate compose
+  // TODO docker-compose up
+  throw notImplemented('runUninstallApp')
   return true
 }
 
-async function runInstallApp(id: string): Promise<boolean> {
-  addInstalledApp(id)
+async function runInstallApp(
+  id: string,
+  variables: Record<string, string>
+): Promise<boolean> {
+  addInstalledApp(id, variables)
+  const compose = await generateCompose()
+  await dockerCommand(compose, 'up', (msg) => (log += `\n${msg}`), {
+    args: ['-d', '--remove-orphans'],
+  })
   return true
 }
 
-export const getApps = async () =>
-  process.env.NODE_ENV === 'production' ? await loadApps() : appsMock()
+// Service API
+// process.env.NODE_ENV === 'production'
+export const getApps = async () => (true ? await loadApps() : appsMock())
 
-export const getAppLog = (id: string): string =>
-  process.env.NODE_ENV === 'production' ? loadAppLog(id) : appLogMock()
+export const getAppLog = async (id: string): Promise<string> =>
+  true ? loadAppLog(id) : appLogMock()
 
 export const uninstallApp = async (id: string) =>
   runIfNotBusy(async () =>
-    process.env.NODE_ENV === 'production'
-      ? await runUninstallApp(id)
-      : await appUninstallMock(id)
+    true ? await runUninstallApp(id) : await appUninstallMock(id)
   )
 
-export const installApp = async (id: string) =>
+export const installApp = async (
+  id: string,
+  variables: Record<string, string>
+) =>
   runIfNotBusy(async () =>
-    process.env.NODE_ENV === 'production'
-      ? await runInstallApp(id)
-      : await appInstallMock(id)
+    true ? await runInstallApp(id, variables) : await appInstallMock(id)
   )
 
-export const getLog = async () =>
-  process.env.NODE_ENV === 'production' ? loadLog() : appLogMock()
+export const getLog = () => (true ? loadLog() : appLogMock())
 
 export const getIsBusy = () => busy

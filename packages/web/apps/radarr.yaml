@@ -10,5 +10,6 @@ services:
       - TZ=Europe/Stockholm
 
 ingresses:
-  - radarr:7878
+  radarr: 7878
+
 description: 'A music streaming server'
