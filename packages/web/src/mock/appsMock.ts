@@ -57,3 +57,7 @@ export const appInstallMock = async (id: string): Promise<boolean> => {
   app.state = 'installed'
   return true
 }
+
+export const upgradeAppsMock = async (): Promise<void> => {
+  await new Promise((r) => setTimeout(() => r(''), 10000))
+}

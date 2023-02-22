@@ -11,17 +11,39 @@ export type DockerActionOptions = {
   args?: string[]
 }
 
-export const dockerCommand = async (
-  compose: ComposeSpecification,
-  command: 'up' | 'pull' | 'logs',
-  log: (msg: string) => void,
-  options?: DockerActionOptions
-) => {
-  const dockerCommand = `docker compose --verbose -p templates2 -f - ${command} ${options?.args?.join(
-    ' '
-  )}`
-  await execCommand(`echo '${JSON.stringify(compose)}' | ${dockerCommand}`, log)
+export const dockerLog = async (id: string, log: (msg: string) => void) => {
+  const compose = await generateCompose()
+  const command = `docker compose -p templates2 -f - logs ${id}`
+  await execCommand(`echo '${JSON.stringify(compose)}' | ${command}`, log)
 }
+
+export const dockerInstall = async (log: (msg: string) => void) => {
+  const compose = await generateCompose()
+  const settings = getSettings()
+  const base64 = Buffer.from(JSON.stringify(compose)).toString('base64')
+  await execCommand(
+    `docker run -v /var/run/docker.sock:/var/run/docker.sock -e COMPOSE=${base64} ${settings.image} sh -c 'echo $COMPOSE | base64 -d | docker compose -p templates2 -f - up -d --remove-orphans'`,
+    log
+  )
+}
+
+export const dockerPull = async (log: (msg: string) => void) => {
+  const compose = await generateCompose()
+  const command = `docker compose -p templates2 -f - pull`
+  await execCommand(`echo '${JSON.stringify(compose)}' | ${command}`, log)
+}
+
+// export const dockerCommand = async (
+//   compose: ComposeSpecification,
+//   command: 'up' | 'pull' | 'logs',
+//   log: (msg: string) => void,
+//   options?: DockerActionOptions
+// ) => {
+//   const dockerCommand = `docker compose --verbose -p templates2 -f - ${command} ${options?.args?.join(
+//     ' '
+//   )}`
+//   await execCommand(`echo '${JSON.stringify(compose)}' | ${dockerCommand}`, log)
+// }
 
 const traefikService = (insecure: boolean): DefinitionsService => {
   const traefik = {
@@ -103,7 +125,7 @@ const getAppConfig = (id: string): AppConfig =>
   JSON.parse(JSON.stringify(appDirectory[id]))
 
 type Ingress = { domain: string; port: number; service: string }
-export const generateCompose = async () => {
+const generateCompose = async () => {
   const settings = getSettings()
   const installedApps = getInstalledApps()
   const installed = Object.entries(installedApps).flatMap(([id, variables]) => {

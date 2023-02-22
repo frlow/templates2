@@ -2,7 +2,7 @@
   "name": "web",
   "scripts": {
     "dev": "solid-start dev",
-    "build": "solid-start build",
+    "build": "solid-start build && esbuild --format=esm --platform=node --bundle src/init.ts --outfile=dist/init.js",
     "start": "solid-start start",
     "preview": "solid-start build && USERNAME=user PASSWORD=pass DOMAIN=example.com solid-start start",
     "apps": "node apps.mjs"

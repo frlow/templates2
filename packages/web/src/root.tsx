@@ -36,6 +36,7 @@ export default function Root() {
               <A href="/">Apps</A>
               <A href="/install">Install</A>
               <A href="/log">Log</A>
+              <A href="/config">Config</A>
             </div>
             <Routes>
               <FileRoutes />

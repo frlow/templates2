@@ -57,6 +57,7 @@ export default function () {
           data()?.app?.state === 'installed'
             ? await uninstall(id)
             : await install(id)
+
           await refetchRouteData()
           setHandling(false)
         }}

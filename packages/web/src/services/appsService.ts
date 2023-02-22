@@ -4,10 +4,11 @@ import {
   appLogMock,
   appsMock,
   appUninstallMock,
+  upgradeAppsMock,
 } from '~/mock/appsMock'
 import { appDirectory } from '~/appDirectory'
 import * as fs from 'fs'
-import { dockerCommand, generateCompose } from '~/docker'
+import { dockerInstall, dockerLog, dockerPull } from '~/docker'
 
 export type AppType = 'app' | 'service'
 export type AppState = 'installed' | 'notInstalled'
@@ -75,20 +76,14 @@ function loadLog(): string {
 
 async function loadAppLog(id: string): Promise<string> {
   if (!getInstalledApps()[id]) return ''
-  const compose = await generateCompose()
   let appLog = ''
-  await dockerCommand(compose, 'logs', (msg) => (appLog += msg), {
-    args: [id],
-  })
+  await dockerLog(id, (msg) => (appLog += msg))
   return appLog
 }
 
 async function runUninstallApp(id: string): Promise<boolean> {
   removeInstalledApp(id)
-  const compose = await generateCompose()
-  await dockerCommand(compose, 'up', (msg) => (log += msg), {
-    args: ['-d', '--remove-orphans'],
-  })
+  await dockerInstall((msg) => (log += msg))
   return true
 }
 
@@ -97,11 +92,13 @@ async function runInstallApp(
   variables: Record<string, string>
 ): Promise<boolean> {
   addInstalledApp(id, variables)
-  const compose = await generateCompose()
-  await dockerCommand(compose, 'up', (msg) => (log += msg), {
-    args: ['-d', '--remove-orphans'],
-  })
+  await dockerInstall((msg) => (log += msg))
   return true
+}
+
+async function runUpgradeApps() {
+  await dockerPull((msg) => (log += msg))
+  await dockerInstall((msg) => (log += msg))
 }
 
 export const getApps = async () =>
@@ -129,5 +126,8 @@ export const installApp = async (
 
 export const getLog = () =>
   process.env.MOCK !== 'true' ? loadLog() : appLogMock()
+
+export const upgradeApps = () =>
+  process.env.MOCK !== 'true' ? runUpgradeApps() : upgradeAppsMock()
 
 export const getIsBusy = () => busy
