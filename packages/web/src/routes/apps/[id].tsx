@@ -46,7 +46,7 @@ export default function () {
         id={id}
         onClick={() =>
           data()?.app?.state === 'installed' &&
-          (window.location.href = `https://${id}.${data()?.settings.domain}`)
+          (window.location.href = `http://${id}.${data()?.settings.domain}`)
         }
       />
       <button

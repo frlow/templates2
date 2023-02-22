@@ -10,6 +10,8 @@
     "prettier": "^2.8.4"
   },
   "scripts": {
-    "web": "pnpm --filter=web run"
+    "web": "pnpm --filter=web run",
+    "login": "pnpm --filter=login run",
+    "docker": "pnpm run web build && docker build -t templates2 . && docker run -e USERNAME=user -e PASSWORD=pass -e DOMAIN=example.com -e INSECURE=true --rm -it -v /var/run/docker.sock:/var/run/docker.sock -p 3000:3000 templates2"
   }
 }

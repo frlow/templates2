@@ -9,11 +9,13 @@ import { appDirectory } from '~/appDirectory'
 import * as fs from 'fs'
 import { dockerCommand, generateCompose } from '~/docker'
 
+export type AppType = 'app' | 'service'
+export type AppState = 'installed' | 'notInstalled'
 export type App = {
   id: string
   description: string
-  type: 'app' | 'service'
-  state: 'installed' | 'notInstalled'
+  type: AppType
+  state: AppState
 }
 
 const notImplemented = (name: string) => `${name} is not implemented`
@@ -29,7 +31,8 @@ const runIfNotBusy = async (func: () => Promise<boolean>) => {
   return result
 }
 
-const installedAppsPath = './apps.json'
+const installedAppsPath = './data/apps.json'
+if (!fs.existsSync('./data')) fs.mkdirSync('./data')
 export type InstalledApps = Record<string, Record<string, string>>
 
 const saveInstalledApps = (apps: InstalledApps) =>
@@ -56,9 +59,11 @@ async function loadApps(): Promise<App[]> {
   const installed = getInstalledApps()
   return Object.entries(appDirectory).map(([id, value]) => ({
     id,
-    state: installed[id] ? 'installed' : 'notInstalled',
+    state: (installed[id] ? 'installed' : 'notInstalled') as AppState,
     description: value.description,
-    type: value.ingresses?.length || 0 > 0 ? 'app' : 'service',
+    type: (Object.keys(value.ingresses || {}).length || 0 > 0
+      ? 'app'
+      : 'service') as AppType,
   }))
 }
 
@@ -70,16 +75,20 @@ function loadLog(): string {
 
 async function loadAppLog(id: string): Promise<string> {
   if (!getInstalledApps()[id]) return ''
-  // TODO generate compose
-  // TODO docker-compose log <id>
-  throw notImplemented('loadAppLog')
+  const compose = await generateCompose()
+  let appLog = ''
+  await dockerCommand(compose, 'logs', (msg) => (appLog += msg), {
+    args: [id],
+  })
+  return appLog
 }
 
 async function runUninstallApp(id: string): Promise<boolean> {
   removeInstalledApp(id)
-  // TODO generate compose
-  // TODO docker-compose up
-  throw notImplemented('runUninstallApp')
+  const compose = await generateCompose()
+  await dockerCommand(compose, 'up', (msg) => (log += msg), {
+    args: ['-d', '--remove-orphans'],
+  })
   return true
 }
 
@@ -89,22 +98,23 @@ async function runInstallApp(
 ): Promise<boolean> {
   addInstalledApp(id, variables)
   const compose = await generateCompose()
-  await dockerCommand(compose, 'up', (msg) => (log += `\n${msg}`), {
+  await dockerCommand(compose, 'up', (msg) => (log += msg), {
     args: ['-d', '--remove-orphans'],
   })
   return true
 }
 
-// Service API
-// process.env.NODE_ENV === 'production'
-export const getApps = async () => (true ? await loadApps() : appsMock())
+export const getApps = async () =>
+  process.env.MOCK !== 'true' ? await loadApps() : appsMock()
 
 export const getAppLog = async (id: string): Promise<string> =>
-  true ? loadAppLog(id) : appLogMock()
+  process.env.MOCK !== 'true' ? loadAppLog(id) : appLogMock()
 
 export const uninstallApp = async (id: string) =>
   runIfNotBusy(async () =>
-    true ? await runUninstallApp(id) : await appUninstallMock(id)
+    process.env.MOCK !== 'true'
+      ? await runUninstallApp(id)
+      : await appUninstallMock(id)
   )
 
 export const installApp = async (
@@ -112,9 +122,12 @@ export const installApp = async (
   variables: Record<string, string>
 ) =>
   runIfNotBusy(async () =>
-    true ? await runInstallApp(id, variables) : await appInstallMock(id)
+    process.env.MOCK !== 'true'
+      ? await runInstallApp(id, variables)
+      : await appInstallMock(id)
   )
 
-export const getLog = () => (true ? loadLog() : appLogMock())
+export const getLog = () =>
+  process.env.MOCK !== 'true' ? loadLog() : appLogMock()
 
 export const getIsBusy = () => busy

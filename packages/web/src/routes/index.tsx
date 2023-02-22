@@ -30,7 +30,7 @@ export default function Home() {
             <Tile
               title={app.id}
               onClick={() =>
-                (window.location.href = `https://${app.id}.${
+                (window.location.href = `http://${app.id}.${
                   data()?.settings.domain
                 }`)
               }
