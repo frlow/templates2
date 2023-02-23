@@ -6,9 +6,9 @@ import {
   appUninstallMock,
   upgradeAppsMock,
 } from '~/mock/appsMock'
-import { appDirectory } from '~/appDirectory'
+import {appDirectory} from '~/appDirectory'
 import * as fs from 'fs'
-import { dockerInstall, dockerLog, dockerPull } from '~/docker'
+import {dockerInstall, dockerLog, dockerPull} from '~/docker'
 
 export type AppType = 'app' | 'service'
 export type AppState = 'installed' | 'notInstalled'

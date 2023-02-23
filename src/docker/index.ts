@@ -1,5 +1,5 @@
 import { getSettings, Settings } from '~/services/settingsService'
-import { ComposeSpecification, DefinitionsService } from '~/docker/Compose'
+import { ComposeSpecification, DefinitionsService } from './Compose'
 import { getInstalledApps } from '~/services/appsService'
 import { appDirectory } from '~/appDirectory'
 import { execCommand } from '~/docker/exec'
@@ -7,22 +7,15 @@ import { AppConfig } from '~/docker/AppDirectory'
 import * as fs from 'fs'
 import YAML from 'yaml'
 
-export type DockerActionOptions = {
-  args?: string[]
-}
-
 export const dockerLog = async (id: string, log: (msg: string) => void) => {
   const compose = await generateCompose()
   const command = `docker compose -p templates2 -f - logs ${id}`
   await execCommand(`echo '${JSON.stringify(compose)}' | ${command}`, log)
 }
 
-export const dockerInstall = async (
-  log: (msg: string) => void,
-  settingsOverride?: Settings
-) => {
+export const dockerInstall = async (log: (msg: string) => void) => {
   const compose = await generateCompose()
-  const settings = settingsOverride || getSettings()
+  const settings = getSettings()
   const base64 = Buffer.from(JSON.stringify(compose)).toString('base64')
   await execCommand(
     `docker run -v /var/run/docker.sock:/var/run/docker.sock -e COMPOSE=${base64} ${settings.image} sh -c 'echo $COMPOSE | base64 -d | docker compose -p templates2 -f - up -d --remove-orphans'`,
@@ -39,7 +32,7 @@ export const dockerPull = async (log: (msg: string) => void) => {
 const traefikService = (insecure: boolean): DefinitionsService => {
   const traefik = {
     image: 'traefik',
-    ports: ['80:80', '443:443'],
+    ports: ['80:80', '443:443', '8080:8080'],
     volumes: ['/var/run/docker.sock:/var/run/docker.sock', 'traefik:/data'],
     restart: 'always',
     command: [
@@ -57,7 +50,6 @@ const traefikService = (insecure: boolean): DefinitionsService => {
         '--entrypoints.websecure.address=:443',
         '--entrypoints.web.http.redirections.entryPoint.to=websecure',
         '--certificatesresolvers.default.acme.tlsChallenge=true',
-        // "--certificatesresolvers.default.acme.email={{email}}",
         '--certificatesresolvers.default.acme.storage=/data/acme.json',
       ]
     )
@@ -89,6 +81,10 @@ const templatesService = (settings: Settings): DefinitionsService => {
       }`,
     ],
   }
+  if (!settings.insecure)
+    (service!.labels as any).push(
+      'traefik.http.routers.templates.tls.certresolver=default'
+    )
   return service
 }
 
@@ -106,9 +102,12 @@ const applyIngress = (
       `traefik.http.routers.${ingress.service}-${
         ingress.domain
       }.entrypoints=web${settings.insecure ? '' : 'secure'}`,
-      // `traefik.http.services.${ingress.service}-${ingress.domain}.loadbalancer.server.scheme=https`,
     ]
   )
+  if (!settings.insecure)
+    (service!.labels as any).push(
+      `traefik.http.routers.${ingress.service}-${ingress.domain}.tls.certresolver=default`
+    )
   return service
 }
 
