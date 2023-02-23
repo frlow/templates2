@@ -14,6 +14,7 @@ import { AppTitle } from '~/components/AppTitle'
 import { buttonStyle } from '~/routes/style'
 import { getSettings } from '~/services/settingsService'
 import { Log } from '~/components/Log'
+import { MenuBar } from '~/components/MenuBar'
 
 const rootStyle = css`
   display: flex;
@@ -41,33 +42,36 @@ export default function () {
   const [, uninstall] = createServerAction$((id: string) => uninstallApp(id))
   const [, install] = createServerAction$((id: string) => installApp(id, {}))
   return (
-    <main class={rootStyle}>
-      <AppTitle
-        id={id}
-        onClick={() =>
-          data()?.app?.state === 'installed' &&
-          (window.location.href = `http://${id}.${data()?.settings.domain}`)
-        }
-      />
-      <button
-        disabled={handling() || data()?.busy}
-        class={buttonStyle}
-        onClick={async () => {
-          setHandling(true)
-          data()?.app?.state === 'installed'
-            ? await uninstall(id)
-            : await install(id)
+    <>
+      <MenuBar />
+      <main class={rootStyle}>
+        <AppTitle
+          id={id}
+          onClick={() =>
+            data()?.app?.state === 'installed' &&
+            (window.location.href = `http://${id}.${data()?.settings.domain}`)
+          }
+        />
+        <button
+          disabled={handling() || data()?.busy}
+          class={buttonStyle}
+          onClick={async () => {
+            setHandling(true)
+            data()?.app?.state === 'installed'
+              ? await uninstall(id)
+              : await install(id)
 
-          await refetchRouteData()
-          setHandling(false)
-        }}
-      >
-        {data()?.app?.state === 'installed' ? 'Uni' : 'I'}nstall
-        {handling() ? 'ing...' : ''}
-      </button>
-      {data()?.app?.state === 'installed' && (
-        <Log text={data()?.log || ''} onRefresh={() => refetchRouteData()} />
-      )}
-    </main>
+            await refetchRouteData()
+            setHandling(false)
+          }}
+        >
+          {data()?.app?.state === 'installed' ? 'Uni' : 'I'}nstall
+          {handling() ? 'ing...' : ''}
+        </button>
+        {data()?.app?.state === 'installed' && (
+          <Log text={data()?.log || ''} onRefresh={() => refetchRouteData()} />
+        )}
+      </main>
+    </>
   )
 }

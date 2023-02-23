@@ -2,20 +2,23 @@
   "name": "web",
   "scripts": {
     "dev": "solid-start dev",
-    "build": "pnpm run apps && solid-start build && esbuild --format=esm --platform=node --bundle src/init.ts --outfile=dist/init.js",
+    "build": "pnpm run apps && solid-start build && esbuild --format=esm --platform=node --bundle src/init.ts --outfile=dist/init.mjs",
     "start": "solid-start start",
     "preview": "solid-start build && USERNAME=user PASSWORD=pass DOMAIN=example.com solid-start start",
-    "apps": "node apps.mjs"
+    "apps": "node apps.mjs",
+    "init:dev": "tsx src/init.ts"
   },
   "type": "module",
   "devDependencies": {
+    "@types/inquirer": "^9.0.3",
     "@types/node": "^18.11.18",
     "esbuild": "^0.14.54",
     "postcss": "^8.4.21",
     "solid-start-node": "^0.2.19",
     "typescript": "^4.9.4",
     "vite": "^3.2.5",
-    "yaml": "^2.2.1"
+    "yaml": "^2.2.1",
+    "tsx": "^3.12.3"
   },
   "dependencies": {
     "@solidjs/meta": "^0.28.2",
@@ -23,7 +26,8 @@
     "solid-js": "^1.6.11",
     "solid-start": "^0.2.21",
     "solid-styled-components": "^0.28.5",
-    "undici": "^5.15.1"
+    "undici": "^5.15.1",
+    "inquirer": "^9.1.4"
   },
   "engines": {
     "node": ">=16.8"

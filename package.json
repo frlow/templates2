@@ -13,7 +13,7 @@
     "web": "pnpm --filter=web run",
     "login": "pnpm --filter=login run",
     "docker:build": "pnpm run web build && docker build -t templates2 .",
-    "docker:start": "docker run -e USERNAME=user -e PASSWORD=pass -e DOMAIN=example.com -e INSECURE=true --rm -it -v /var/run/docker.sock:/var/run/docker.sock templates2 node dist/init.js",
+    "docker:start": "docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock templates2 node dist/init.mjs",
     "docker": "pnpm run docker:build && pnpm run docker:start"
   }
 }

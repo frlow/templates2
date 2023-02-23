@@ -1,7 +1,6 @@
 // @refresh reload
 import { Suspense } from 'solid-js'
 import {
-  A,
   Body,
   ErrorBoundary,
   FileRoutes,
@@ -13,7 +12,6 @@ import {
   Title,
 } from 'solid-start'
 import './root.css'
-import { css } from 'solid-styled-components'
 
 export default function Root() {
   return (
@@ -26,18 +24,6 @@ export default function Root() {
       <Body>
         <Suspense>
           <ErrorBoundary>
-            <div
-              class={css`
-                a {
-                  color: white;
-                }
-              `}
-            >
-              <A href="/">Apps</A>
-              <A href="/install">Install</A>
-              <A href="/log">Log</A>
-              <A href="/config">Config</A>
-            </div>
             <Routes>
               <FileRoutes />
             </Routes>

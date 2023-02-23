@@ -1,3 +1,4 @@
+import inquirer from 'inquirer'
 import { dockerInstall } from '~/docker'
 
 dockerInstall((msg) => {
