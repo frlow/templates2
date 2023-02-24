@@ -79,6 +79,15 @@ const templatesService = (settings: Settings): DefinitionsService => {
       `traefik.http.routers.templates.entrypoints=web${
         settings.insecure ? '' : 'secure'
       }`,
+      'traefik.http.middlewares.templates.forwardauth.address=http://templates:3000/__login/q',
+      'traefik.http.routers.templates.middlewares=templates@docker',
+      'traefik.http.routers.auth.rule=PathPrefix(`/__login`)',
+      'traefik.http.routers.auth.priority=1000',
+      'traefik.http.services.auth.loadbalancer.server.port=3000',
+      'traefik.http.routers.auth.service=auth',
+      `traefik.http.routers.auth.entrypoints=web${
+        settings.insecure ? '' : 'secure'
+      }`,
     ],
   }
   if (!settings.insecure)
@@ -108,13 +117,25 @@ const applyIngress = (
     (service!.labels as any).push(
       `traefik.http.routers.${ingress.service}-${ingress.domain}.tls.certresolver=default`
     )
+  if (!ingress.insecure)
+    (service!.labels as any).push(
+      ...[
+        `traefik.http.middlewares.${ingress.service}-${ingress.domain}.forwardauth.address=http://templates:3000/__login/q`,
+        `traefik.http.routers.${ingress.service}-${ingress.domain}.middlewares=${ingress.service}-${ingress.domain}@docker`,
+      ]
+    )
   return service
 }
 
 const getAppConfig = (id: string): AppConfig =>
   JSON.parse(JSON.stringify(appDirectory[id]))
 
-type Ingress = { domain: string; port: number; service: string }
+type Ingress = {
+  domain: string
+  port: number
+  service: string
+  insecure?: boolean
+}
 const generateCompose = async () => {
   const settings = getSettings()
   const installedApps = getInstalledApps()

@@ -1,63 +1,111 @@
 import { APIEvent, redirect } from 'solid-start/api'
-import { buttonStyle, inputStyle } from '~/routes/style'
 import { getSettings } from '~/services/settingsService'
-import { css } from 'solid-styled-components'
-import { useLocation } from '@solidjs/router'
 import { generateToken } from '~/routes/__login/q'
 
-const formStyle = css`
-  display: flex;
+export async function GET({ request }: APIEvent) {
+  const searchParams = new URLSearchParams(
+    request.url.substring(request.url.indexOf('?'))
+  )
+  const wrongPass = searchParams.get('wrongpass')
+  return new Response(
+    `<!DOCTYPE html>
+<html>
+<head>
+<title>Log in</title>
+<style>
+
+form{
+    display: flex;
   flex-direction: column;
   color: white;
-`
+}
 
-const submitStyle = css`
-  margin-top: 1rem;
-`
-
-const labelStyle = css`
-  text-transform: uppercase;
+label{
+    text-transform: uppercase;
   font-weight: 300;
   padding: 5px;
-`
+}
 
-export default function () {
-  const location = useLocation()
-  const searchParams = new URLSearchParams(location.search)
-  const wrongPass = searchParams.get('wrongpass')
-  return (
-    <main>
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1em;
+    margin: 0 auto;
+    overflow-x: hidden;
+}
+
+h1 {
+    color: #335d92;
+    text-transform: uppercase;
+    font-size: 4rem;
+    font-weight: 100;
+    line-height: 1.1;
+    margin: 1rem;
+}
+
+body {
+    font-family: Gordita, Roboto, Oxygen, Ubuntu, Cantarell,
+    'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #252525;
+}
+
+.button{
+  padding: 1rem;
+  border-radius: 4px;
+  border: 1px solid white;
+  background-color: #6e6e6e;
+  color: white;
+  width: 300px;
+  margin-top: 1rem;
+}
+input{
+    width: calc(300px - 2.2rem);
+  padding: 1.1rem;
+  border-radius: 1rem;
+  border: white;
+  background-color: #4f6679;
+  color: white;
+}
+</style>
+</head>
+
+<body>
+<main>
       <h1>Login</h1>
-      <form method={'post'} class={formStyle} enctype="multipart/form-data">
-        <label for={'username'} class={labelStyle}>
+      <form method='post'  enctype="multipart/form-data">
+        <label for='username' >
           Username
         </label>
-        <input id={'username'} name={'username'} class={inputStyle} />
-        <label for={'password'} class={labelStyle}>
+        <input id='username' name='username' />
+        <label for='password' >
           Password
         </label>
         <input
-          id={'password'}
-          name={'password'}
-          type={'password'}
-          class={inputStyle}
+          id='password'
+          name='password'
+          type='password'
         />
-        {wrongPass && (
-          <div
-            class={css`
-              color: firebrick;
-            `}
-          >
+        ${
+          wrongPass
+            ? `
+          <div style="color: firebrick;">
             Wrong username or password
           </div>
-        )}
+        `
+            : ''
+        }
         <input
-          type={'submit'}
-          class={`${buttonStyle} ${submitStyle}`}
-          value={'Login'}
+        class="button"
+          type='submit'
+          value='Login'
         />
       </form>
     </main>
+</body>
+
+</html>`,
+    { headers: { 'content-type': 'text/html' } }
   )
 }
 
@@ -73,9 +121,13 @@ export async function POST({ request }: APIEvent) {
   const redirectQuery = searchParams.get('redirect')
   if (username === settings.username && password === settings.password) {
     const token = generateToken()
+    const expires = new Date()
+    expires.setTime(token.expires)
     return redirect(redirectQuery || '/', {
       headers: {
-        'set-cookie': `access-token=${token}; Domain=${settings.domain}`,
+        'set-cookie': `access-token=${token.token}; Domain=${
+          settings.domain
+        }; expires=${expires.toUTCString()}`,
       },
     })
   } else {

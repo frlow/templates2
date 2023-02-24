@@ -2,62 +2,71 @@ import express from 'express'
 import { networkInterfaces } from 'os'
 import { dockerInstall } from './docker'
 import { overrideSettings } from './services/settingsService'
+
 import inquirer from 'inquirer'
-import { execCommand } from '~/docker/exec'
 ;(async () => {
-  const results = await inquirer.prompt([
-    {
-      name: 'username',
-      type: 'input',
-      message: 'Enter a username:',
-    },
-    {
-      name: 'password',
-      type: 'password',
-      message: 'Enter a password:',
-    },
-    {
-      name: 'repeat',
-      type: 'password',
-      message: 'Repeat password:',
-      validate(input: any, answers?: any) {
-        const same = input === answers.password
-        if (!same) console.log('Passwords do not match')
-        return same
-      },
-    },
-    {
-      name: 'domain',
-      type: 'input',
-      message: 'Enter a domain name:',
-    },
-    {
-      name: 'insecure',
-      type: 'list',
-      default: 'https',
-      message: 'Use https encryption?',
-      choices: [
-        { value: false, name: 'Https (recommended)' },
-        { name: 'Http', value: true },
-      ],
-    },
-    {
-      name: 'image',
-      type: 'input',
-      message: 'Docker image to use:',
-      default: 'templates2',
-    },
-    {
-      name: 'test',
-      type: 'list',
-      default: 'yes',
-      message: 'Do you want to test that everything is set up properly?',
-      choices: [
-        { value: true, name: 'Yes (recommended)' },
-        { name: 'No', value: false },
-      ],
-    },
-  ])
+  const results =
+    process.argv.length === 6
+      ? {
+          domain: process.argv[2],
+          username: process.argv[3],
+          password: process.argv[4],
+          insecure: process.argv[5] === 'insecure',
+          image: 'templates2',
+        }
+      : await inquirer.prompt([
+          {
+            name: 'username',
+            type: 'input',
+            message: 'Enter a username:',
+          },
+          {
+            name: 'password',
+            type: 'password',
+            message: 'Enter a password:',
+          },
+          {
+            name: 'repeat',
+            type: 'password',
+            message: 'Repeat password:',
+            validate(input: any, answers?: any) {
+              const same = input === answers.password
+              if (!same) console.log('Passwords do not match')
+              return same
+            },
+          },
+          {
+            name: 'domain',
+            type: 'input',
+            message: 'Enter a domain name:',
+          },
+          {
+            name: 'insecure',
+            type: 'list',
+            default: 'https',
+            message: 'Use https encryption?',
+            choices: [
+              { value: false, name: 'Https (recommended)' },
+              { name: 'Http', value: true },
+            ],
+          },
+          {
+            name: 'image',
+            type: 'input',
+            message: 'Docker image to use:',
+            default: 'templates2',
+          },
+          {
+            name: 'test',
+            type: 'list',
+            default: 'yes',
+            message: 'Do you want to test that everything is set up properly?',
+            choices: [
+              { value: true, name: 'Yes (recommended)' },
+              { name: 'No', value: false },
+            ],
+          },
+        ])
 
   if (results.test)
     await (async () => {

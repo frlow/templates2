@@ -9,6 +9,7 @@ specifiers:
   esbuild: ^0.14.54
   express: ^4.18.2
   inquirer: ^9.1.4
+  nanoid: ^4.0.1
   postcss: ^8.4.21
   prettier: ^2.8.4
   solid-js: ^1.6.11
@@ -26,6 +27,7 @@ dependencies:
   '@solidjs/router': 0.7.0_solid-js@1.6.11
   express: 4.18.2
   inquirer: 9.1.4
+  nanoid: 4.0.1
   solid-js: 1.6.11
   solid-start: 0.2.21_6tbv3hhr7wlpclrfsxnrwdmhry
   solid-styled-components: 0.28.5_solid-js@1.6.11
@@ -3011,6 +3013,12 @@ packages:
     resolution: {integrity: sha1-cwtn480J4t6s8DwCfIHJ2dvF6Ks=}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
+
+  /nanoid/4.0.1:
+    resolution: {integrity: sha1-OY18z9v5+vIjGyyn6P/128pqUJs=}
+    engines: {node: ^14 || ^16 || >=18}
+    hasBin: true
+    dev: false
 
   /negotiator/0.6.3:
     resolution: {integrity: sha1-WOMjpy/twNb5zU0x/kn1FHlZDM0=}

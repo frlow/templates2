@@ -11,7 +11,8 @@
     "init:run": "node dist/init.mjs",
     "docker:build": "pnpm run build && docker build -t templates2 .",
     "docker:start": "docker rm -f $(docker ps -a -q) || true && docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock --net=host templates2 node init.mjs",
-    "docker": "pnpm run docker:build && pnpm run docker:start"
+    "docker": "pnpm run docker:build && pnpm run docker:start",
+    "docker:quick": "pnpm run docker example.com user pass insecure"
   },
   "type": "module",
   "devDependencies": {
@@ -35,7 +36,8 @@
     "solid-start": "^0.2.21",
     "solid-styled-components": "^0.28.5",
     "undici": "^5.15.1",
-    "inquirer": "^9.1.4"
+    "inquirer": "^9.1.4",
+    "nanoid": "^4.0.1"
   },
   "engines": {
     "node": ">=16.8"
