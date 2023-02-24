@@ -1,15 +1,18 @@
-import { getSettings, Settings } from '~/services/settingsService'
-import { ComposeSpecification, DefinitionsService } from './Compose'
-import { getInstalledApps } from '~/services/appsService'
-import { appDirectory } from '~/appDirectory'
-import { execCommand } from '~/docker/exec'
-import { AppConfig } from '~/docker/AppDirectory'
+import {getSettings, Settings} from '~/services/settingsService'
+import {ComposeSpecification, DefinitionsService} from './Compose'
+import {getInstalledApps} from '~/services/appsService'
+import {appDirectory} from '~/appDirectory'
+import {execCommand} from '~/docker/exec'
+import {AppConfig} from '~/docker/AppDirectory'
 import * as fs from 'fs'
 import YAML from 'yaml'
 
+const projectName = 'templates2'
+
 export const dockerLog = async (id: string, log: (msg: string) => void) => {
   const compose = await generateCompose()
-  const command = `docker compose -p templates2 -f - logs ${id}`
+  const settings = getSettings()
+  const command = `docker compose -p ${projectName} -f - logs ${id}`
   await execCommand(`echo '${JSON.stringify(compose)}' | ${command}`, log)
 }
 
@@ -18,21 +21,22 @@ export const dockerInstall = async (log: (msg: string) => void) => {
   const settings = getSettings()
   const base64 = Buffer.from(JSON.stringify(compose)).toString('base64')
   await execCommand(
-    `docker run -v /var/run/docker.sock:/var/run/docker.sock -e COMPOSE=${base64} ${settings.image} sh -c 'echo $COMPOSE | base64 -d | docker compose -p templates2 -f - up -d --remove-orphans'`,
+    `docker run -v /var/run/docker.sock:/var/run/docker.sock -e COMPOSE=${base64} ${settings.image} sh -c 'echo $COMPOSE | base64 -d | docker compose -p ${projectName} -f - up -d --remove-orphans'`,
     log
   )
 }
 
 export const dockerPull = async (log: (msg: string) => void) => {
   const compose = await generateCompose()
-  const command = `docker compose -p templates2 -f - pull`
+  const settings = getSettings()
+  const command = `docker compose -p ${projectName} -f - pull`
   await execCommand(`echo '${JSON.stringify(compose)}' | ${command}`, log)
 }
 
 const traefikService = (insecure: boolean): DefinitionsService => {
   const traefik = {
     image: 'traefik',
-    ports: ['80:80', '443:443', '8080:8080'],
+    ports: ['80:80', '443:443'],
     volumes: ['/var/run/docker.sock:/var/run/docker.sock', 'traefik:/data'],
     restart: 'always',
     command: [
@@ -103,7 +107,8 @@ const applyIngress = (
   settings: Settings
 ) => {
   if (!service.labels) service.labels = ['traefik.enable=true']
-  ;(service.labels as string[]).push(
+  ;
+  (service.labels as string[]).push(
     ...[
       `traefik.http.routers.${ingress.service}-${ingress.domain}.rule=Host(\`${ingress.domain}.${settings.domain}\`)`,
       `traefik.http.services.${ingress.service}-${ingress.domain}.loadbalancer.server.port=${ingress.port}`,
@@ -145,9 +150,9 @@ const generateCompose = async () => {
     const ingresses: Ingress[] = Object.entries(appConfig.ingresses || {}).map(
       ([id, value]) => {
         if (typeof value === 'number')
-          return { domain: id, port: value, service: id }
+          return {domain: id, port: value, service: id}
         else
-          return { domain: value.domain || id, port: value.port, service: id }
+          return {domain: value.domain || id, port: value.port, service: id}
       }
     )
     for (const ingress of ingresses) {
@@ -160,13 +165,13 @@ const generateCompose = async () => {
   })
   const traefik = applyIngress(
     traefikService(settings.insecure),
-    { service: 'traefik', port: 8080, domain: 'traefik' },
+    {service: 'traefik', port: 8080, domain: 'traefik'},
     settings
   )
   installed.push(['traefik', traefik])
   installed.push(['templates', templatesService(settings)])
   const services = installed.reduce(
-    (acc, [key, value]) => ({ ...acc, [key]: value }),
+    (acc, [key, value]) => ({...acc, [key]: value}),
     {}
   )
   const volumes = installed.reduce((acc, [key, value]) => {

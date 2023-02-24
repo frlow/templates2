@@ -12,7 +12,7 @@ import inquirer from 'inquirer'
           username: process.argv[3],
           password: process.argv[4],
           insecure: process.argv[5] === 'insecure',
-          image: 'templates2',
+          image: 'lowet84/templates2',
         }
       : await inquirer.prompt([
           {
@@ -54,7 +54,7 @@ import inquirer from 'inquirer'
             name: 'image',
             type: 'input',
             message: 'Docker image to use:',
-            default: 'templates2',
+            default: 'lowet84/templates2',
           },
           {
             name: 'test',
