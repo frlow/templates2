@@ -2,7 +2,7 @@ import YAML from 'yaml'
 import fs from 'fs'
 import path from 'path'
 
-const yamlApps = fs.readdirSync('./apps')
+const yamlApps = fs.readdirSync('./apps').filter(f=>!f.startsWith(".DS_Store"))
 const apps = yamlApps.reduce((acc, file) => ({
     ...acc,
     [path.parse(file).name]: YAML.parse(fs.readFileSync(path.join("apps", file), 'utf8'))

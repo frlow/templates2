@@ -1,0 +1,19 @@
+compose:
+  image: lscr.io/linuxserver/transmission
+  environment:
+    - PUID=1000
+    - PGID=1000
+    - TZ=Europe/Stockholm
+    - USER={{username}}
+    - PASS={{password}}
+  volumes:
+    - transmission:/config
+    - media:/data
+
+config:
+  service:
+    transmission: 9091
+
+variables:
+  - username
+  - password

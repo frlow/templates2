@@ -1,0 +1,12 @@
+compose:
+  image: lscr.io/linuxserver/lidarr
+  environment:
+    - PUID=1000
+    - PGID=1000
+    - TZ=Europe/London
+  volumes:
+    - lidarr:/config
+    - media:/data
+config:
+  service:
+    lidarr: 8686

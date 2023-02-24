@@ -1,0 +1,13 @@
+compose:
+  image: lscr.io/linuxserver/readarr:develop
+  volumes:
+    - readarr:/config
+    - media:/data
+  environment:
+    - PUID=1000
+    - PGID=1000
+    - TZ=Europe/Stockholm
+
+config:
+  service:
+    readarr: 8787

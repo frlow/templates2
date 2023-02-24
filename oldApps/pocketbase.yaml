@@ -1,0 +1,10 @@
+compose:
+  image: "ghcr.io/muchobien/pocketbase:latest"
+  volumes:
+    - "pocketbase:/pb_data"
+
+config:
+  service:
+    pocketbase:
+      port: -8090
+      path: /_

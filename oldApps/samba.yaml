@@ -1,0 +1,26 @@
+compose:
+  image: dperson/samba
+  environment:
+    - USERID=1000
+    - GROUPID=1000
+    - TZ=Europe/Stockholm
+  command: -u "{{username}};{{password}}" -s "files;/data;yes;no;no"
+  ports:
+    - 139:139
+    - 445:445
+  volumes:
+    - media:/data
+
+config:
+
+variables:
+  - username
+  - password
+
+name: Samba server
+description: | 
+  # Samba server (smb)
+  The server is available at
+  ```
+  //<user>@<ip or domain>/files
+  ```

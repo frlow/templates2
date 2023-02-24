@@ -1,0 +1,16 @@
+compose:
+  image: quay.io/keycloak/keycloak
+  environment:
+    - KEYCLOAK_ADMIN={{username}}
+    - KEYCLOAK_ADMIN_PASSWORD={{password}}
+  command: start-dev
+  volumes:
+    - keycloak:/opt/keycloak/data
+
+variables:
+  - username
+  - password
+
+config:
+  service:
+    keycloak: 8080
