@@ -1,9 +1,9 @@
-import {getSettings, Settings} from '~/services/settingsService'
-import {ComposeSpecification, DefinitionsService} from './Compose'
-import {getInstalledApps} from '~/services/appsService'
-import {appDirectory} from '~/appDirectory'
-import {execCommand} from '~/docker/exec'
-import {AppConfig} from '~/docker/AppDirectory'
+import { getSettings, Settings } from '~/services/settingsService'
+import { ComposeSpecification, DefinitionsService } from './Compose'
+import { getInstalledApps } from '~/services/appsService'
+import { appDirectory } from '~/appDirectory'
+import { execCommand } from '~/docker/exec'
+import { AppConfig } from '~/docker/AppDirectory'
 import * as fs from 'fs'
 import YAML from 'yaml'
 
@@ -11,7 +11,6 @@ const projectName = 'templates2'
 
 export const dockerLog = async (id: string, log: (msg: string) => void) => {
   const compose = await generateCompose()
-  const settings = getSettings()
   const command = `docker compose -p ${projectName} -f - logs ${id}`
   await execCommand(`echo '${JSON.stringify(compose)}' | ${command}`, log)
 }
@@ -107,8 +106,7 @@ const applyIngress = (
   settings: Settings
 ) => {
   if (!service.labels) service.labels = ['traefik.enable=true']
-  ;
-  (service.labels as string[]).push(
+  ;(service.labels as string[]).push(
     ...[
       `traefik.http.routers.${ingress.service}-${ingress.domain}.rule=Host(\`${ingress.domain}.${settings.domain}\`)`,
       `traefik.http.services.${ingress.service}-${ingress.domain}.loadbalancer.server.port=${ingress.port}`,
@@ -150,9 +148,19 @@ const generateCompose = async () => {
     const ingresses: Ingress[] = Object.entries(appConfig.ingresses || {}).map(
       ([id, value]) => {
         if (typeof value === 'number')
-          return {domain: id, port: value, service: id}
+          return {
+            domain: id,
+            port: Math.abs(value),
+            service: id,
+            insecure: value < 0,
+          }
         else
-          return {domain: value.domain || id, port: value.port, service: id}
+          return {
+            domain: value.domain || id,
+            port: value.port,
+            service: id,
+            insecure: value.insecure,
+          }
       }
     )
     for (const ingress of ingresses) {
@@ -165,13 +173,13 @@ const generateCompose = async () => {
   })
   const traefik = applyIngress(
     traefikService(settings.insecure),
-    {service: 'traefik', port: 8080, domain: 'traefik'},
+    { service: 'traefik', port: 8080, domain: 'traefik' },
     settings
   )
   installed.push(['traefik', traefik])
   installed.push(['templates', templatesService(settings)])
   const services = installed.reduce(
-    (acc, [key, value]) => ({...acc, [key]: value}),
+    (acc, [key, value]) => ({ ...acc, [key]: value }),
     {}
   )
   const volumes = installed.reduce((acc, [key, value]) => {
