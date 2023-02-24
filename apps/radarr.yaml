@@ -12,4 +12,4 @@ services:
 ingresses:
   radarr: 7878
 
-description: 'A music streaming server'
+description: 'Movie download automation'
