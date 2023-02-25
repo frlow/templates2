@@ -4,7 +4,6 @@ import { getApps } from '~/services/appsService'
 import { drawerStyle, inputStyle } from '~/routes/style'
 import Tile from '~/components/Tile'
 import { useNavigate } from '@solidjs/router'
-import { css } from 'solid-styled-components'
 import { createSignal } from 'solid-js'
 import { MenuBar } from '~/components/MenuBar'
 
@@ -33,7 +32,7 @@ export default function () {
           {data()
             ?.apps?.filter((app) => app.state === 'notInstalled')
             .filter((app) => app.id.includes(search()))
-            .sort((a, b) => (a.id.localeCompare(b.id) ? -1 : 1))
+            .sort((a, b) => (a.id.localeCompare(b.id) ? 1 : -1))
             .map((app) => (
               <Tile
                 title={app.id}

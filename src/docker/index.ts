@@ -1,5 +1,9 @@
 import { getSettings, Settings } from '~/services/settingsService'
-import { ComposeSpecification, DefinitionsService } from './Compose'
+import {
+  ComposeSpecification,
+  DefinitionsService,
+  PropertiesServices,
+} from './Compose'
 import { getInstalledApps } from '~/services/appsService'
 import { appDirectory } from '~/appDirectory'
 import { execCommand } from '~/docker/exec'
@@ -7,7 +11,7 @@ import { AppConfig } from '~/docker/AppDirectory'
 import * as fs from 'fs'
 import YAML from 'yaml'
 
-const projectName = 'templates2'
+const projectName = 'templates'
 
 export const dockerLog = async (id: string, log: (msg: string) => void) => {
   const compose = await generateCompose()
@@ -100,6 +104,18 @@ const templatesService = (settings: Settings): DefinitionsService => {
   return service
 }
 
+const replaceVariables = (
+  service: DefinitionsService,
+  variables: Record<string, string>
+): DefinitionsService => {
+  let str = JSON.stringify(service)
+  Object.entries(variables).forEach(([key, value]) => {
+    const regexp = new RegExp(`{{${key}}}`, 'g')
+    str = str.replace(regexp, value)
+  })
+  return JSON.parse(str)
+}
+
 const applyIngress = (
   service: DefinitionsService,
   ingress: Ingress,
@@ -169,7 +185,20 @@ const generateCompose = async () => {
     }
     const ret = Object.entries(services)
     ret.forEach((r) => (r[1].restart = 'always'))
-    return ret
+    const withVariables = ret.map(
+      ([key, service]) =>
+        [
+          key,
+          replaceVariables(service, {
+            username: settings.username,
+            password: settings.password,
+            image: settings.image,
+            domain: settings.domain,
+            ...variables,
+          }),
+        ] as [string, DefinitionsService]
+    )
+    return withVariables
   })
   const traefik = applyIngress(
     traefikService(settings.insecure),

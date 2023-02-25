@@ -28,7 +28,7 @@ export default function Home() {
             ?.apps?.filter(
               (app) => app.type === 'app' && app.state === 'installed'
             )
-            .sort((a, b) => (a.id.localeCompare(b.id) ? -1 : 1))
+            .sort((a, b) => (a.id.localeCompare(b.id) ? 1 : -1))
             .map((app) => (
               <Tile
                 title={app.id}
@@ -47,7 +47,7 @@ export default function Home() {
             ?.apps?.filter(
               (app) => app.type === 'service' && app.state === 'installed'
             )
-            .sort((a, b) => (a.id.localeCompare(b.id) ? -1 : 1))
+            .sort((a, b) => (a.id.localeCompare(b.id) ? 1 : -1))
             .map((app) => (
               <Tile
                 title={app.id}
