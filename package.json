@@ -13,6 +13,7 @@
     "docker:start": "docker rm -f $(docker ps -a -q) || true && docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock --net=host lowet84/templates2 node init.mjs",
     "docker": "pnpm run docker:build && pnpm run docker:start",
     "docker:quick": "pnpm run docker example.com user pass insecure",
+    "docker:purge": "docker rm -f $(docker ps -a -q) || true && docker rmi -f $(docker images -q) || true && docker volume rm -f $(docker volume ls -q)",
     "docker:publish": "pnpm run build && docker buildx build --push --platform linux/amd64,linux/arm64 --tag lowet84/templates2 ."
   },
   "type": "module",
