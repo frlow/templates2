@@ -6,17 +6,17 @@ import {
   appUninstallMock,
   upgradeAppsMock,
 } from '~/mock/appsMock'
-import {appDirectory} from '~/appDirectory'
+import { appDirectory } from '~/appDirectory'
 import * as fs from 'fs'
-import {dockerInstall, dockerLog, dockerPull} from '~/docker'
+import { dockerInstall, dockerLog, dockerPull } from '~/docker'
 
 export type AppType = 'app' | 'service'
 export type AppState = 'installed' | 'notInstalled'
 export type App = {
   id: string
   description: string
-  type: AppType
   state: AppState
+  ingresses: { name: string }[]
 }
 
 const notImplemented = (name: string) => `${name} is not implemented`
@@ -62,9 +62,9 @@ async function loadApps(): Promise<App[]> {
     id,
     state: (installed[id] ? 'installed' : 'notInstalled') as AppState,
     description: value.description,
-    type: (Object.keys(value.ingresses || {}).length || 0 > 0
-      ? 'app'
-      : 'service') as AppType,
+    ingresses: Object.entries(value.ingresses || {}).map(([key, value]) => ({
+      name: key,
+    })),
   }))
 }
 

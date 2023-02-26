@@ -26,14 +26,14 @@ export default function Home() {
         <div class={drawerStyle}>
           {data()
             ?.apps?.filter(
-              (app) => app.type === 'app' && app.state === 'installed'
+              (app) => app.ingresses.length > 0 && app.state === 'installed'
             )
             .sort((a, b) => (a.id.localeCompare(b.id) ? 1 : -1))
             .map((app) => (
               <Tile
                 title={app.id}
                 onClick={() =>
-                  (window.location.href = `http://${app.id}.${
+                  (window.location.href = `http://${app.ingresses[0].name}.${
                     data()?.settings.domain
                   }`)
                 }
@@ -45,7 +45,7 @@ export default function Home() {
         <div class={drawerStyle}>
           {data()
             ?.apps?.filter(
-              (app) => app.type === 'service' && app.state === 'installed'
+              (app) => app.ingresses.length === 0 && app.state === 'installed'
             )
             .sort((a, b) => (a.id.localeCompare(b.id) ? 1 : -1))
             .map((app) => (

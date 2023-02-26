@@ -3,25 +3,25 @@ import { App } from '~/services/appsService'
 export const apps: App[] = [
   {
     id: 'radarr',
-    type: 'app',
     description: 'Automate Movie downloads',
     state: 'notInstalled',
+    ingresses: [{ name: 'radarr' }],
   },
   {
     id: 'sonarr',
-    type: 'app',
+    ingresses: [{ name: 'sonarr' }],
     description: 'Automate TV downloads',
     state: 'installed',
   },
   {
     id: 'airsonic',
-    type: 'app',
+    ingresses: [{ name: 'airsonic' }],
     description: 'A music streaming server',
     state: 'installed',
   },
   {
     id: 'plex',
-    type: 'service',
+    ingresses: [],
     description: 'Media streaming server',
     state: 'installed',
   },

@@ -143,6 +143,10 @@ const applyIngress = (
         `traefik.http.routers.${ingress.service}-${ingress.domain}.middlewares=${ingress.service}-${ingress.domain}@docker`,
       ]
     )
+  if (ingress.protocol)
+    (service!.labels as any).push(
+      `traefik.http.services.${ingress.service}-${ingress.domain}.loadbalancer.server.scheme=${ingress.protocol}`
+    )
   return service
 }
 
@@ -154,6 +158,7 @@ type Ingress = {
   port: number
   service: string
   insecure?: boolean
+  protocol?: 'http' | 'https'
 }
 const generateCompose = async () => {
   const settings = getSettings()
@@ -175,7 +180,8 @@ const generateCompose = async () => {
             domain: value.domain || id,
             port: value.port,
             service: id,
-            insecure: value.insecure,
+            insecure: !!value.insecure,
+            protocol: value.protocol,
           }
       }
     )

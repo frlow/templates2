@@ -71,6 +71,27 @@ export const appDirectory: AppDirectory = {
       "duplicati": 8200
     }
   },
+  "emulatorjs": {
+    "services": {
+      "emulatorjs": {
+        "image": "lscr.io/linuxserver/emulatorjs",
+        "environment": [
+          "PUID=1000",
+          "PGID=1000",
+          "TZ=Europe/London"
+        ],
+        "volumes": [
+          "emulatorjs:/config",
+          "emulatorjs-data:/data"
+        ]
+      }
+    },
+    "ingresses": {
+      "emulatorjs-admin": 3000,
+      "emulatorjs": 80
+    },
+    "description": "# EmulatorJs\nSelf-hosted Javascript emulation for various system.\n"
+  },
   "flood": {
     "serivices": {
       "flood": {
@@ -106,6 +127,17 @@ export const appDirectory: AppDirectory = {
     },
     "ingresses": {
       "gitea": -3000
+    }
+  },
+  "guacamole": {
+    "compose": {
+      "image": "maxwaldorf/guacamole",
+      "volumes": [
+        "guacamole:/config"
+      ]
+    },
+    "ingresses": {
+      "guacamole": 8080
     }
   },
   "heimdall": {
@@ -316,6 +348,19 @@ export const appDirectory: AppDirectory = {
       }
     }
   },
+  "pocketbase": {
+    "services": {
+      "compose": {
+        "image": "ghcr.io/muchobien/pocketbase:latest",
+        "volumes": [
+          "pocketbase:/pb_data"
+        ]
+      }
+    },
+    "ingresses": {
+      "pocketbase": -8090
+    }
+  },
   "portainer": {
     "services": {
       "portainer": {
@@ -483,6 +528,31 @@ export const appDirectory: AppDirectory = {
     },
     "ingresses": {
       "transmission": 9091
+    }
+  },
+  "unifi-controller": {
+    "services": {
+      "unifi": {
+        "image": "lscr.io/linuxserver/unifi-controller",
+        "environment": [
+          "PUID=1000",
+          "PGID=1000"
+        ],
+        "volumes": [
+          "unifi:/config"
+        ],
+        "ports": [
+          "3478:3478/udp",
+          "10001:10001/udp",
+          "8080:8080"
+        ]
+      }
+    },
+    "ingresses": {
+      "unifi": {
+        "port": 8443,
+        "protocol": "https"
+      }
     }
   }
 }

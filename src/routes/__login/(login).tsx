@@ -125,9 +125,11 @@ export async function POST({ request }: APIEvent) {
     expires.setTime(token.expires)
     return redirect(redirectQuery || '/', {
       headers: {
-        'set-cookie': `access-token=${token.token}; Domain=${
-          settings.domain
-        }; expires=${expires.toUTCString()}`,
+        'set-cookie': `access-token=${token.token}; ${
+          request.url.startsWith('http://localhost:3000')
+            ? ''
+            : `Domain=${settings.domain};`
+        } expires=${expires.toUTCString()}`,
       },
     })
   } else {
