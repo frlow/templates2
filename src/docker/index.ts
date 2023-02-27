@@ -11,11 +11,10 @@ import { AppConfig } from '~/docker/AppDirectory'
 import * as fs from 'fs'
 import YAML from 'yaml'
 
-const projectName = 'templates'
-
 export const dockerLog = async (id: string, log: (msg: string) => void) => {
   const compose = await generateCompose()
-  const command = `docker compose -p ${projectName} -f - logs ${id}`
+  const settings = getSettings()
+  const command = `docker compose -p ${settings.project} -f - logs ${id}`
   await execCommand(`echo '${JSON.stringify(compose)}' | ${command}`, log)
 }
 
@@ -24,7 +23,7 @@ export const dockerInstall = async (log: (msg: string) => void) => {
   const settings = getSettings()
   const base64 = Buffer.from(JSON.stringify(compose)).toString('base64')
   await execCommand(
-    `docker run -v /var/run/docker.sock:/var/run/docker.sock -e COMPOSE=${base64} ${settings.image} sh -c 'echo $COMPOSE | base64 -d | docker compose -p ${projectName} -f - up -d --remove-orphans'`,
+    `docker run -v /var/run/docker.sock:/var/run/docker.sock -e COMPOSE=${base64} ${settings.image} sh -c 'echo $COMPOSE | base64 -d | docker compose -p ${settings.project} -f - up -d --remove-orphans'`,
     log
   )
 }
@@ -32,7 +31,7 @@ export const dockerInstall = async (log: (msg: string) => void) => {
 export const dockerPull = async (log: (msg: string) => void) => {
   const compose = await generateCompose()
   const settings = getSettings()
-  const command = `docker compose -p ${projectName} -f - pull`
+  const command = `docker compose -p ${settings.project} -f - pull`
   await execCommand(`echo '${JSON.stringify(compose)}' | ${command}`, log)
 }
 

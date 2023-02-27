@@ -57,6 +57,12 @@ import inquirer from 'inquirer'
             default: 'lowet84/templates2',
           },
           {
+            name: 'project',
+            type: 'input',
+            message: 'Project name:',
+            default: 'templates',
+          },
+          {
             name: 'test',
             type: 'list',
             default: 'yes',

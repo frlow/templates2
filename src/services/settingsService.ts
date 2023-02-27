@@ -7,6 +7,7 @@ export type Settings = {
   domain: string
   insecure: boolean
   image: string
+  project: string
 }
 
 const validate = (envName: string) => {
@@ -24,6 +25,7 @@ const loadSettings = (): Settings => {
       domain: validate('DOMAIN'),
       insecure: process.env.INSECURE === 'true',
       image: process.env.IMAGE || 'lowet84/templates2',
+      project: process.env.PROJECT || 'templates',
     }
   return settings
 }

@@ -278,6 +278,28 @@ export const appDirectory: AppDirectory = {
       "miniserve": 8080
     }
   },
+  "nextcloud": {
+    "services": {
+      "nextcloud": {
+        "image": "lscr.io/linuxserver/nextcloud",
+        "environment": [
+          "PUID=1000",
+          "PGID=1000",
+          "TZ=Europe/Stockholm"
+        ],
+        "volumes": [
+          "nextcloud:/config",
+          "nextcloud-data:/data"
+        ]
+      }
+    },
+    "ingresses": {
+      "nextcloud": {
+        "port": 443,
+        "protocol": "https"
+      }
+    }
+  },
   "nodered": {
     "services": {
       "nodered": {
