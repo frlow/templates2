@@ -16,7 +16,7 @@ import {
 } from '~/services/appsService'
 import { createSignal } from 'solid-js'
 import { AppTitle } from '~/components/AppTitle'
-import { buttonStyle } from '~/routes/style'
+import { buttonStyle, inputStyle } from '~/routes/style'
 import { getSettings } from '~/services/settingsService'
 import { Log } from '~/components/Log'
 import { MenuBar } from '~/components/MenuBar'
@@ -43,9 +43,13 @@ export function routeData({ params }: RouteDataArgs) {
 export default function () {
   const { id } = useParams<{ id: string }>()
   const [handling, setHandling] = createSignal(false)
+  const [variables, setVariables] = createSignal<Record<string, string>>({})
   const data = useRouteData<typeof routeData>()
   const [, uninstall] = createServerAction$((id: string) => uninstallApp(id))
-  const [, install] = createServerAction$((id: string) => installApp(id, {}))
+  const [, install] = createServerAction$(
+    (args: { id: string; variables: any }) =>
+      installApp(args.id, args.variables)
+  )
   return (
     <>
       <MenuBar />
@@ -58,6 +62,28 @@ export default function () {
             (window.location.href = `http://${id}.${data()?.settings.domain}`)
           }
         />
+        {data()?.app?.state === 'notInstalled' && data()?.app?.variables && (
+          <>
+            <h2>Variables</h2>
+            {data()?.app?.variables?.map((v) => (
+              <>
+                <label
+                  class={css`
+                    color: white;
+                  `}
+                >
+                  {v}
+                </label>
+                <input
+                  class={inputStyle}
+                  onChange={(e: any) =>
+                    setVariables({ ...variables(), [v]: e.target.value })
+                  }
+                />
+              </>
+            ))}
+          </>
+        )}
         <button
           disabled={handling() || data()?.busy}
           class={buttonStyle}
@@ -65,7 +91,7 @@ export default function () {
             setHandling(true)
             data()?.app?.state === 'installed'
               ? await uninstall(id)
-              : await install(id)
+              : await install({ id, variables: variables() })
 
             await refetchRouteData()
             setHandling(false)

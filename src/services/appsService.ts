@@ -17,6 +17,7 @@ export type App = {
   description: string
   state: AppState
   ingresses: { name: string }[]
+  variables?: string[]
 }
 
 const notImplemented = (name: string) => `${name} is not implemented`
@@ -65,6 +66,7 @@ async function loadApps(): Promise<App[]> {
     ingresses: Object.entries(value.ingresses || {}).map(([key, value]) => ({
       name: key,
     })),
+    variables: value.variables,
   }))
 }
 

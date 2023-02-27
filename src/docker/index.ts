@@ -34,7 +34,7 @@ export const dockerPull = async (log: (msg: string) => void) => {
 const traefikService = (insecure: boolean): DefinitionsService => {
   const traefik = {
     image: 'traefik',
-    ports: ['80:80', '443:443', '8080:8080'],
+    ports: ['80:80', '443:443'],
     volumes: ['/var/run/docker.sock:/var/run/docker.sock', 'traefik:/data'],
     restart: 'always',
     command: [

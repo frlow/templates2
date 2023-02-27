@@ -50,6 +50,27 @@ export const appDirectory: AppDirectory = {
     },
     "description": "An nginx demo app"
   },
+  "duckdns": {
+    "services": {
+      "duckdns": {
+        "image": "lscr.io/linuxserver/duckdns",
+        "environment": [
+          "PUID=1000",
+          "PGID=1000",
+          "TZ=Europe/London",
+          "SUBDOMAINS={{domain}}",
+          "TOKEN={{token}}",
+          "LOG_FILE=false"
+        ],
+        "volumes": [
+          "duckdns:/config"
+        ]
+      }
+    },
+    "variables": [
+      "token"
+    ]
+  },
   "duplicati": {
     "services": {
       "duplicato": {

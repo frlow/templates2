@@ -8,6 +8,7 @@ export const drawerStyle = css`
 `
 
 export const buttonStyle = css`
+  margin-top: 1rem;
   padding: 1rem;
   border-radius: 4px;
   border: 1px solid white;
