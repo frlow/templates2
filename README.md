@@ -1,30 +1,42 @@
-# SolidStart
+# Templates server (v2)
 
-Everything you need to build a Solid project, powered by [`solid-start`](https://start.solidjs.com);
+Templates server is an open source, self-hosted "store" to simplify installing Docker apps.
 
-## Creating a project
+## Installation
 
-```bash
-# create a new project in the current directory
-npm init solid@latest
+### Install docker
 
-# create a new project in my-app
-npm init solid@latest my-app
+Install docker on your server.
+
+```
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
 ```
 
-## Developing
+### Forward ports
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Forward port 80 & 443 to the ip of your server.
 
-```bash
-npm run dev
+### Get a domain name
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+Get a domain name and forward it to your public IP. The domain provider must support wildcard subdomains.
+You can get a free domain at: [DuckDns](https://www.duckdns.org/)
+
+### Start the app
+
+Run the server using:
+
+```
+docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock --net=host lowet84/templates2 node init.mjs
 ```
 
-## Building
+You will be prompted for the following information.
 
-Solid apps are built with _adapters_, which optimise your project for deployment to different environments.
-
-By default, `npm run build` will generate a Node app that you can run with `npm start`. To use a different adapter, add it to the `devDependencies` in `package.json` and specify in your `vite.config.js`.
+- Username, pick a username, it will be used for authentication and used as default username for apps that support
+  configuring a username externally
+- Password, password for authentication
+- Domain, your domain name
+- Https or http, https recommended, the server will automatically get a valid ssl certificate from LetsEncrypt
+- Image, a custom docker image if you want to run you own fork of the server.
+- Project, custom project name, used by docker-compose for naming containers and volumes
+- Test, test that ports and domain have been configured correctly. 
