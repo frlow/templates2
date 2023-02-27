@@ -4,14 +4,20 @@
     "esModuleInterop": true,
     "target": "ESNext",
     "module": "ESNext",
+    "noEmit": true,
     "moduleResolution": "node",
     "jsxImportSource": "solid-js",
     "jsx": "preserve",
     "strict": true,
-    "types": ["solid-start/env"],
+    "types": [
+      "solid-start/env"
+    ],
+    "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": [
+        "./src/*"
+      ]
     }
   }
 }

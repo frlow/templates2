@@ -1,9 +1,5 @@
 import { getSettings, Settings } from '~/services/settingsService'
-import {
-  ComposeSpecification,
-  DefinitionsService,
-  PropertiesServices,
-} from './Compose'
+import { ComposeSpecification, DefinitionsService } from './Compose'
 import { getInstalledApps } from '~/services/appsService'
 import { appDirectory } from '~/appDirectory'
 import { execCommand } from '~/docker/exec'
@@ -38,7 +34,7 @@ export const dockerPull = async (log: (msg: string) => void) => {
 const traefikService = (insecure: boolean): DefinitionsService => {
   const traefik = {
     image: 'traefik',
-    ports: ['80:80', '443:443'],
+    ports: ['80:80', '443:443', '8080:8080'],
     volumes: ['/var/run/docker.sock:/var/run/docker.sock', 'traefik:/data'],
     restart: 'always',
     command: [
@@ -76,6 +72,7 @@ const templatesService = (settings: Settings): DefinitionsService => {
       `DOMAIN=${settings.domain}`,
       `INSECURE=${settings.insecure}`,
       `USERNAME=${settings.username}`,
+      `PROJECT=${settings.project}`,
     ],
     labels: [
       'traefik.enable=true',
@@ -98,7 +95,8 @@ const templatesService = (settings: Settings): DefinitionsService => {
   }
   if (!settings.insecure)
     (service!.labels as any).push(
-      'traefik.http.routers.templates.tls.certresolver=default'
+      'traefik.http.routers.templates.tls.certresolver=default',
+      'traefik.http.routers.auth.tls.certresolver=default'
     )
   return service
 }

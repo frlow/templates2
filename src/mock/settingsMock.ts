@@ -5,4 +5,6 @@ export const settingsMock: Settings = {
   password: 'pass',
   domain: 'example.com',
   insecure: false,
+  project: 'templates',
+  image: 'lowet84/templates2',
 }

@@ -1,4 +1,4 @@
-servicecs:
+services:
   homeassistant:
     image: lscr.io/linuxserver/homeassistant
     network_mode: host

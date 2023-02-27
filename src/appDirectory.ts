@@ -93,7 +93,7 @@ export const appDirectory: AppDirectory = {
     "description": "# EmulatorJs\nSelf-hosted Javascript emulation for various system.\n"
   },
   "flood": {
-    "serivices": {
+    "services": {
       "flood": {
         "image": "jesec/flood",
         "volumes": [
@@ -130,11 +130,13 @@ export const appDirectory: AppDirectory = {
     }
   },
   "guacamole": {
-    "compose": {
-      "image": "maxwaldorf/guacamole",
-      "volumes": [
-        "guacamole:/config"
-      ]
+    "services": {
+      "guacamole": {
+        "image": "maxwaldorf/guacamole",
+        "volumes": [
+          "guacamole:/config"
+        ]
+      }
     },
     "ingresses": {
       "guacamole": 8080
@@ -159,7 +161,7 @@ export const appDirectory: AppDirectory = {
     }
   },
   "homeassistant": {
-    "servicecs": {
+    "services": {
       "homeassistant": {
         "image": "lscr.io/linuxserver/homeassistant",
         "network_mode": "host",

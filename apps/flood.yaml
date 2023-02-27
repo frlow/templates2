@@ -1,4 +1,4 @@
-serivices:
+services:
   flood:
     image: jesec/flood
     volumes:

@@ -61,7 +61,7 @@ async function loadApps(): Promise<App[]> {
   return Object.entries(appDirectory).map(([id, value]) => ({
     id,
     state: (installed[id] ? 'installed' : 'notInstalled') as AppState,
-    description: value.description,
+    description: value.description || '',
     ingresses: Object.entries(value.ingresses || {}).map(([key, value]) => ({
       name: key,
     })),

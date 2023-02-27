@@ -1,6 +1,7 @@
 import * as fs from 'fs'
 import { nanoid } from 'nanoid'
 import { APIEvent, redirect } from 'solid-start/api'
+import { getSettings } from '~/services/settingsService'
 
 const tokensPath = './data/tokens.json'
 const readTokens = (): Record<string, number> => {
@@ -35,9 +36,15 @@ export const parseCookies = (request: Request) =>
 
 export function GET({ request }: APIEvent) {
   const tokens = readTokens()
+  const settings = getSettings()
   const accessToken = parseCookies(request)['access-token']
   if (tokens[accessToken]) return new Response(null, { status: 200 })
-  const forwardUrl = request.headers.get('x-forwarded-uri') || '/'
+  const forwardUrl =
+    request.headers.get('x-forwarded-uri')?.split('?')[0] || '/'
   const forwardedHost = request.headers.get('x-forwarded-host')
-  return redirect(`http://${forwardedHost}/__login?redirect=${forwardUrl}`)
+  return redirect(
+    `http${
+      settings.insecure ? '' : 's'
+    }://${forwardedHost}/__login?redirect=${forwardUrl}`
+  )
 }

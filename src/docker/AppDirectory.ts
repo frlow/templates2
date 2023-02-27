@@ -10,7 +10,7 @@ export type IngressConfig =
     }
   | number
 export type AppConfig = {
-  description: string
+  description?: string
   ingresses?: Record<string, IngressConfig>
   services: PropertiesServices
   variables?: string[]
