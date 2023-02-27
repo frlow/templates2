@@ -1,6 +1,11 @@
 import { useParams } from '@solidjs/router'
 import { css } from 'solid-styled-components'
-import { refetchRouteData, RouteDataArgs, useRouteData } from 'solid-start'
+import {
+  refetchRouteData,
+  RouteDataArgs,
+  Title,
+  useRouteData,
+} from 'solid-start'
 import { createServerAction$, createServerData$ } from 'solid-start/server'
 import {
   getAppLog,
@@ -44,6 +49,7 @@ export default function () {
   return (
     <>
       <MenuBar />
+      <Title>Templates - Manage App - {id}</Title>
       <main class={rootStyle}>
         <AppTitle
           id={id}

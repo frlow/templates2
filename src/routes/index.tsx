@@ -21,7 +21,7 @@ export default function Home() {
     <>
       <MenuBar />
       <main>
-        <Title>Installed apps</Title>
+        <Title>Templates - Installed apps</Title>
         <h1>Apps</h1>
         <div class={drawerStyle}>
           {data()

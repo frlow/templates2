@@ -1,7 +1,7 @@
 import { Log } from '~/components/Log'
 import { createServerData$ } from 'solid-start/server'
 import { getLog } from '~/services/appsService'
-import { refetchRouteData, useRouteData } from 'solid-start'
+import { refetchRouteData, Title, useRouteData } from 'solid-start'
 import { MenuBar } from '~/components/MenuBar'
 
 export function routeData() {
@@ -15,6 +15,7 @@ export default function () {
   return (
     <>
       <MenuBar />
+      <Title>Templates - Log</Title>
       <main>
         <h1>log</h1>
         <Log

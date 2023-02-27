@@ -21,7 +21,7 @@ export default function () {
     <>
       <MenuBar />
       <main>
-        <Title> Store</Title>
+        <Title>Templates - Store</Title>
         <h1>Install</h1>
         <input
           class={inputStyle}

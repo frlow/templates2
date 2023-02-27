@@ -24,7 +24,7 @@ export default function () {
     <>
       <MenuBar />
       <main>
-        <Title>Config</Title>
+        <Title>Templates - Config</Title>
         <h1>Config</h1>
         <button
           disabled={data()?.busy}
