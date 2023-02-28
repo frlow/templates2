@@ -130,6 +130,11 @@ export const getLog = () =>
   process.env.MOCK !== 'true' ? loadLog() : appLogMock()
 
 export const upgradeApps = () =>
-  process.env.MOCK !== 'true' ? runUpgradeApps() : upgradeAppsMock()
+  runIfNotBusy(async () => {
+    process.env.MOCK !== 'true'
+      ? await runUpgradeApps()
+      : await upgradeAppsMock()
+    return true
+  })
 
 export const getIsBusy = () => busy
