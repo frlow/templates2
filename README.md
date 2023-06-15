@@ -32,7 +32,7 @@ docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock --net=host lowe
 
 Set up folder permissions:
 ```
-docker run --rm -it -v templates_media:/data -w /data alpine sh -c "mkdir TV Movies complete incomplete && chown 1000:1000 -R ."
+docker run --rm -it -v templates_media:/data -w /data lowet84/templates2 sh -c "mkdir TV Movies complete incomplete && chown 1000:1000 -R ."
 ```
 
 You will be prompted for the following information.
