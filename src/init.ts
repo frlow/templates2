@@ -4,7 +4,9 @@ import { dockerInstall } from './docker'
 import { overrideSettings } from './services/settingsService'
 
 import inquirer from 'inquirer'
-;(async () => {
+import {execCommand} from "~/docker/exec";
+
+(async () => {
   const results =
     process.argv.length === 6
       ? {
@@ -135,7 +137,9 @@ import inquirer from 'inquirer'
       )
     })()
   overrideSettings(results)
-  dockerInstall((msg) => {
+  await await execCommand(`docker run --rm -it -v ${results.project}_media:/data -w /data ${results.image} sh -c "mkdir TV Movies Downloads && chown -R 1000:1000 ."`)
+  await dockerInstall((msg) => {
     console.log(msg)
-  }).then(() => process.exit(0))
+  })
+  process.exit(0)
 })()
