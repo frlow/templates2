@@ -420,6 +420,25 @@ export const appDirectory: AppDirectory = {
       "portainer": 9000
     }
   },
+  "prowlarr": {
+    "services": {
+      "prowlarr": {
+        "image": "lscr.io/linuxserver/prowlarr",
+        "volumes": [
+          "prowlarr:/config"
+        ],
+        "environment": [
+          "PUID=1000",
+          "PGID=1000",
+          "TZ=Europe/Stockholm"
+        ]
+      }
+    },
+    "ingresses": {
+      "prowlarr": 9696
+    },
+    "description": "Prowlarr is a indexer manager/proxy built on the popular arr .net/reactjs base stack to integrate with your various PVR apps. "
+  },
   "radarr": {
     "services": {
       "radarr": {
